@@ -13,18 +13,30 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  // find a single tag by its `id` be sure to include its associated Product data
-  Tag.findAll({
+  // find a single tag by its `id` be sure to include its associated Product Data
+  Tag.findOne({
+    attributes: [
+      'id',
+      'tag_name'
+    ],
     where: {
-      id: req.id.params,
-      include: Product, ProductTag
-    }
+      id: req.params.id
+    },
+    include: [
+      {
+        model: Product,
+        attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
+      }, {
+        model: ProductTag,
+        attributes: ['id', 'product_id', 'tag_id']
+      }
+    ]
   })
   .then(dbTagData => res.json(dbTagData))
   .catch(err => {
     console.log(err);
     res.status(500).json(err);
-  });
+  });  
 });
 
 router.post('/', (req, res) => {
